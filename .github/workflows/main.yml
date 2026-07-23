@@ -2,8 +2,8 @@ name: Auto Renew therose
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '45 11,23 * * *' # 北京时间每天 11:45 和 23:45 运行（GitHub Actions 使用 UTC）
+  # schedule:
+  #   - cron: '45 11,23 * * *' # 北京时间每天 11:45 和 23:45 运行（GitHub Actions 使用 UTC）
 
 permissions:
   actions: write
@@ -34,7 +34,7 @@ jobs:
         env:
           NODE_LINK: ${{ secrets.NODE_LINK }}
         run: |
-          bash <(wget -qO- https://main.ssss.nyc.mn/setup_proxy.sh)
+          bash setup_proxy.sh
 
       - name: 🚀 运行续期脚本
         env:
@@ -46,6 +46,15 @@ jobs:
           PROXY_SERVER: ${{ env.PROXY_SERVER }}
         run: xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" python3 therose.py
 
+      - name: 上传截图产物
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ github.run_number }}
+          path: ./*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: 🧽 清理进程和临时文件
         if: always()
         run: |
@@ -55,17 +64,17 @@ jobs:
           pkill -f Xvfb || true
           rm -f sing-box sing-box-config.json sing-box.log
 
-      - name: 🧹 清理旧的工作流运行记录
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          runs=$(gh run list --workflow="${{ github.workflow }}" --limit=100 --json databaseId --jq '.[].databaseId')
-          count=0
-          for run_id in $runs; do
-            count=$((count + 1))
-            if [ $count -gt 1 ]; then
-              echo "删除运行记录: $run_id"
-              gh run delete $run_id || true
-            fi
-          done
+      # - name: 🧹 清理旧的工作流运行记录
+      #   if: always()
+      #   env:
+      #     GH_TOKEN: ${{ github.token }}
+      #   run: |
+      #     runs=$(gh run list --workflow="${{ github.workflow }}" --limit=100 --json databaseId --jq '.[].databaseId')
+      #     count=0
+      #     for run_id in $runs; do
+      #       count=$((count + 1))
+      #       if [ $count -gt 1 ]; then
+      #         echo "删除运行记录: $run_id"
+      #         gh run delete $run_id || true
+      #       fi
+      #     done
