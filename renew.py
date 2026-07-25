@@ -8,6 +8,7 @@ EMAIL = os.environ.get("EMAIL") or ""            # 邮箱
 PASSWORD = os.environ.get("PASSWORD") or ""      # 密码
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN") or ""  # tg通知 bot token
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID") or ""      # tg通知 chat_id id
+PROXY_URL = os.environ.get("PROXY") or ""
 
 BASE_URL = "https://client.therose.cloud/login"
 
@@ -131,7 +132,7 @@ def login(sb, email, password):
 def main():
     print("🚀 启动浏览器")
 
-    with SB(uc=True, headless=False) as sb:
+    with SB(uc=True, headless=False, proxy=PROXY_URL if PROXY_URL else None) as sb:
         success, url = login(sb, EMAIL, PASSWORD)
         
         if not success:
