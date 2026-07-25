@@ -36,11 +36,29 @@ jobs:
           pip install seleniumbase requests --quiet
           seleniumbase install chromedriver
 
-      - name: ⚙ 设置代理 (sing-box)
-        env:
-          NODE_LINK: ${{ secrets.NODE_LINK }}
+      # - name: ⚙ 设置代理 (sing-box)
+      #   env:
+      #     NODE_LINK: ${{ secrets.NODE_LINK }}
+      #   run: |
+      #     bash setup_proxy.sh
+
+      # =========================
+      # 🟡 1️⃣ 安装官方 WARP 客户端 (纯 SOCKS5 模式)
+      # =========================
+      - name: Setup Official WARP Proxy
         run: |
-          bash setup_proxy.sh
+          # 导入 Cloudflare 官方源并安装
+          curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ jammy main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+          sudo apt-get update && sudo apt-get install -y cloudflare-warp
+          
+          # 注册并设置为纯代理模式 (默认占用 40000 端口，绝不断网)
+          warp-cli --accept-tos registration new
+          warp-cli --accept-tos mode proxy
+          warp-cli --accept-tos connect
+          
+          echo "⏳ 等待 WARP 隧道建立 (10秒)..."
+          sleep 10
 
       - name: 🚀 运行续期
         env:
@@ -48,7 +66,8 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-          PROXY: ${{ env.PROXY_SERVER }}
+          # PROXY: ${{ env.PROXY_SERVER }}
+          PROXY: "socks5://127.0.0.1:40000"
         run: |
           xvfb-run --auto-servernum python3 renew_therose.py
 
