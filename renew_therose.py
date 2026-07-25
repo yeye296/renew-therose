@@ -23,9 +23,11 @@ def click_extend_button(sb):
         'span:contains("Extend")',
         'button:contains(title="Extend")',
     ]
+    time.sleep(5)
+    
     for sel in selectors:
         try:
-            if sb.find_element(sel, timeout=2):
+            if sb.find_element(sel, timeout=5):
                 print(f"✅ 找到按钮，选择器: {sel}")
                 sb.uc_click(sel, timeout=5)
                 print("✅ 点击成功")
@@ -33,7 +35,7 @@ def click_extend_button(sb):
         except:
             continue
     try:
-        btn = sb.find_element('button:contains("Extend")', timeout=2)
+        btn = sb.find_element('button:contains("Extend")', timeout=10)
         sb.driver.execute_script("arguments[0].click();", btn)
         print("✅ 通过 JavaScript 点击成功")
         return True, {}
@@ -57,7 +59,7 @@ def check_renewal_success(sb):
     
     for selector in success_selectors:
         try:
-            element = sb.find_element(selector, timeout=2)
+            element = sb.find_element(selector, timeout=5)
             if element:
                 text = element.text
                 print(f"✅ 发现成功提示！选择器: {selector}")
@@ -148,6 +150,7 @@ def main():
         if not ok:
             msg = f"❌ 点击 Extend 按钮失败: {info.get('error')}"
             print(msg)
+            sb.save_screenshot("click_extend_faild.png")
             send_tg(TG_BOT_TOKEN, TG_CHAT_ID, msg)
             sys.exit(1)
         
@@ -163,11 +166,13 @@ def main():
             else:
                 msg = "❌ 未找到 Order now 按钮"
                 print(msg)
+                sb.save_screenshot("click_order_faild.png")
                 send_tg(TG_BOT_TOKEN, TG_CHAT_ID, msg)
                 sys.exit(1)
         except Exception as e:
             msg = f"❌ 点击 Order now 失败: {e}"
             print(msg)
+            sb.save_screenshot("click_order_error.png")
             send_tg(TG_BOT_TOKEN, TG_CHAT_ID, msg)
             sys.exit(1)
         
