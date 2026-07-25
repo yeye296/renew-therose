@@ -3,7 +3,12 @@ name: Auto Renew therose
 on:
   workflow_dispatch:
   # schedule:
-  #   - cron: '45 11,23 * * *' # 北京时间每天 11:45 和 23:45 运行（GitHub Actions 使用 UTC）
+  #   - cron: '*/55 * * * *'
+
+# 限制并发运行：如果当前有正在运行的相同工作流，则取消旧的运行新任务
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   actions: write
@@ -15,13 +20,14 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4 # 修正为当前最新的 v4 版本
 
-      - name: ⚙ 设置 Python
-        uses: actions/setup-python@v6
+      - name: ⚙️ 设置 Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          # 删掉了 cache: 'pip' 这一行
 
       - name: 🛠️ 安装系统依赖和 Python 依赖
         run: |
@@ -36,12 +42,13 @@ jobs:
         run: |
           bash setup_proxy.sh
 
-      - name: 🚀 运行续期脚本
+      - name: 🚀 运行续期与重启脚本
         env:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          SERVER_URL: ${{ secrets.SERVER_URL }} # [新增] 传递服务器面板链接
           IS_PROXY: ${{ env.IS_PROXY }}
           PROXY_SERVER: ${{ env.PROXY_SERVER }}
         run: xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" python3 therose.py
