@@ -10,7 +10,9 @@ TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN") or ""  # tg通知 bot token
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID") or ""      # tg通知 chat_id id
 PROXY_URL = os.environ.get("PROXY") or ""
 
-BASE_URL = "https://client.therose.cloud/login"
+# BASE_URL = "https://client.therose.cloud/login"
+BASE_URL = "https://client.therose.cloud/panel?routeName=servers"
+PANEL_URL = "https://client.therose.cloud/panel?routeName=servers"
 
 # 检查必要变量
 if not EMAIL or not PASSWORD:
@@ -19,6 +21,11 @@ if not EMAIL or not PASSWORD:
 
 # 点击续期按钮
 def click_extend_button(sb):
+    current_url = sb.get_current_url()
+    if "routeName=servers" not in current_url:
+        sb.open(PANEL_URL)
+        sb.wait_for_ready_state_complete()
+
     selectors = [
         'span:contains("Extend")',
         'button:contains(title="Extend")',
