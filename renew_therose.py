@@ -190,7 +190,7 @@ def main():
         if renewal_success:
             msg = f"✅ 续期成功！{renewal_msg}"
             print(msg)
-            sb.save_screenshot("renewal_success.png")
+            # sb.save_screenshot("renewal_success.png")
         else:
             msg = f"❌ 续期可能失败: {renewal_msg}"
             print(msg)
