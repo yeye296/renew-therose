@@ -115,10 +115,11 @@ def login(sb, email, password):
     print("🛡 处理 Turnstile...")
     try:
         sb.uc_gui_click_captcha()
-        print("✅ Turnstile 验证已处理")
+        print("✅ Turnstile 已点击")
+        time.sleep(6)
         # sb.save_screenshot("turnstile_passed.png")
     except Exception as e:
-        print(f"⚠️ uc_gui_click_captcha 执行异常: {e}")
+        print(f"⚠️ Turnstile 处理异常: {e}")
     print("🔑 点击登录按钮...")
     sb.uc_click('button:contains("Sign in")')
     sb.sleep(3)
@@ -126,9 +127,9 @@ def login(sb, email, password):
         # 判断是否登录成功
         current_url = sb.get_current_url()
         page_title = sb.get_title() or ""
-        print(f"📄 当前 URL: {current_url} | Title: {page_title}")
+        # print(f"📄 当前 URL: {current_url} | Title: {page_title}")
         if "panel" in current_url:
-            print("✅ 登录成功，已跳转到 Dashboard")
+            print(f"✅ 登录成功，当前 URL: {current_url} | Title: {page_title}")
             # sb.save_screenshot("login_success.png")
             return True, current_url
         time.sleep(1)
