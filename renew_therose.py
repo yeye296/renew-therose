@@ -29,6 +29,7 @@ def click_extend_button(sb):
     selectors = [
         'span:contains("Extend")',
         'button:contains(title="Extend")',
+        # 'button:contains("Extend")',
     ]
     time.sleep(5)
     
@@ -36,7 +37,7 @@ def click_extend_button(sb):
         try:
             if sb.find_element(sel, timeout=5):
                 print(f"✅ 找到按钮，选择器: {sel}")
-                sb.uc_click(sel, timeout=5)
+                sb.js_click(sel, timeout=5)
                 print("✅ 点击成功")
                 return True, {}
         except:
@@ -48,6 +49,18 @@ def click_extend_button(sb):
         return True, {}
     except Exception as e:
         return False, {"error": str(e)}
+
+    # for sel in selectors:
+    #     try:
+    #         elem = sb.find_element(sel, timeout=5)
+    #         print(f"✅ 找到按钮，选择器: {sel}")
+    #         sb.driver.execute_script("arguments[0].click();", elem)
+    #         print("✅ 通过 JavaScript 强制点击成功")
+    #         return True, {}
+    #     except Exception as e:
+    #         continue
+    # return False, {"error": "未找到 Extend 按钮"}
+
 
 # 检查续期是否成功
 def check_renewal_success(sb):
@@ -170,6 +183,7 @@ def main():
             if button:
                 print("🛒 点击 Order now 按钮...")
                 sb.uc_click('button:contains("Order now")')
+                # sb.js_click(button, timeout=5)
                 print("✅ 已点击 Order now 按钮")
             else:
                 msg = "❌ 未找到 Order now 按钮"
