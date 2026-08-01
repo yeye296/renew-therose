@@ -11,8 +11,8 @@ TG_CHAT_ID = os.environ.get("TG_CHAT_ID") or ""      # tg通知 chat_id id
 PROXY_URL = os.environ.get("PROXY") or ""
 
 # BASE_URL = "https://client.therose.cloud/login"
-BASE_URL = "https://client.therose.cloud/panel?routeName=servers"
 PANEL_URL = "https://client.therose.cloud/panel?routeName=servers"
+RENEW_URL = "https://client.therose.cloud/panel?routeName=cart_renew&id=2638"
 
 # 检查必要变量
 if not EMAIL or not PASSWORD:
@@ -22,44 +22,52 @@ if not EMAIL or not PASSWORD:
 # 点击续期按钮
 def click_extend_button(sb):
     current_url = sb.get_current_url()
-    if "routeName=servers" not in current_url:
-        sb.open(PANEL_URL)
+    if "routeName=cart_renew" not in current_url:
+        sb.open(RENEW_URL)
         sb.wait_for_ready_state_complete()
+    return True, {}
 
-    selectors = [
-        'span:contains("Extend")',
-        'button:contains(title="Extend")',
-        'button:contains("Extend")',
-    ]
-    time.sleep(5)
-    
+    # if "routeName=servers" not in current_url:
+    #     sb.open(PANEL_URL)
+    #     sb.wait_for_ready_state_complete()
+
+    # time.sleep(5)
+
+    # selectors = [
+    #     'a:contains("Extend")',          # 对应 <a> 标签
+    #     'a[href*="cart_renew"]',         # 通过 href 关键词精确定位
+    #     'div.server-actions a',          # 通过外层 class 定位 <a> 标签
+    # ]
+
     # for sel in selectors:
     #     try:
     #         if sb.find_element(sel, timeout=5):
-    #             print(f"✅ 找到按钮，选择器: {sel}")
+    #             print(f"✅ 找到元素，选择器: {sel}")
     #             sb.js_click(sel, timeout=5)
     #             print("✅ 点击成功")
     #             return True, {}
-    #     except:
+    #     except Exception as e:
     #         continue
+
     # try:
-    #     btn = sb.find_element('button:contains("Extend")', timeout=10)
-    #     sb.driver.execute_script("arguments[0].click();", btn)
-    #     print("✅ 通过 JavaScript 点击成功")
+    #     span_elem = sb.find_element('span:contains("Extend")', timeout=5)
+    #     # 用 JS 向上寻找最近的 <a> 标签并点击
+    #     sb.driver.execute_script("arguments[0].closest('a').click();", span_elem)
+    #     print("✅ 通过 JS 点击成功")
     #     return True, {}
     # except Exception as e:
-    #     return False, {"error": str(e)}
+    #     print(f"⚠️ JS 点击异常: {e}")
 
-    for sel in selectors:
-        try:
-            elem = sb.find_element(sel, timeout=5)
-            print(f"✅ 找到按钮，选择器: {sel}")
-            sb.driver.execute_script("arguments[0].click();", elem)
-            print("✅ 通过 JavaScript 强制点击成功")
-            return True, {}
-        except Exception as e:
-            continue
-    return False, {"error": "未找到 Extend 按钮"}
+    # try:
+    #     a_elem = sb.find_element('a:contains("Extend")', timeout=5)
+    #     href = a_elem.get_attribute("href")
+    #     print(f"✅ 成功获取 Extend 跳转链接: {href}")
+    #     sb.open(href)
+    #     sb.wait_for_ready_state_complete()
+    #     print("✅ 跳转成功！")
+    #     return True, {}
+    # except Exception as e:
+    #     return False, {"error": f"提取链接失败: {str(e)}"}
 
 
 # 检查续期是否成功
@@ -117,7 +125,7 @@ def send_tg(token, chat_id, message):
 def login(sb, email, password):
     print("🌐 打开登录页面...")
     print("⏳ 等待页面加载...")
-    sb.open(BASE_URL)
+    sb.open(RENEW_URL)
     sb.wait_for_ready_state_complete()
     sb.sleep(1)
     print("📧 填写邮箱...")
@@ -179,7 +187,7 @@ def main():
         
         # 点击 Order now 按钮
         try:
-            button = sb.find_element('button:contains("Order now")', timeout=5)
+            button = sb.find_element('button:contains("Order now")', timeout=15)
             if button:
                 print("🛒 点击 Order now 按钮...")
                 sb.uc_click('button:contains("Order now")')
