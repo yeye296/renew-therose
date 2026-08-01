@@ -29,37 +29,37 @@ def click_extend_button(sb):
     selectors = [
         'span:contains("Extend")',
         'button:contains(title="Extend")',
-        # 'button:contains("Extend")',
+        'button:contains("Extend")',
     ]
     time.sleep(5)
     
-    for sel in selectors:
-        try:
-            if sb.find_element(sel, timeout=5):
-                print(f"✅ 找到按钮，选择器: {sel}")
-                sb.js_click(sel, timeout=5)
-                print("✅ 点击成功")
-                return True, {}
-        except:
-            continue
-    try:
-        btn = sb.find_element('button:contains("Extend")', timeout=10)
-        sb.driver.execute_script("arguments[0].click();", btn)
-        print("✅ 通过 JavaScript 点击成功")
-        return True, {}
-    except Exception as e:
-        return False, {"error": str(e)}
-
     # for sel in selectors:
     #     try:
-    #         elem = sb.find_element(sel, timeout=5)
-    #         print(f"✅ 找到按钮，选择器: {sel}")
-    #         sb.driver.execute_script("arguments[0].click();", elem)
-    #         print("✅ 通过 JavaScript 强制点击成功")
-    #         return True, {}
-    #     except Exception as e:
+    #         if sb.find_element(sel, timeout=5):
+    #             print(f"✅ 找到按钮，选择器: {sel}")
+    #             sb.js_click(sel, timeout=5)
+    #             print("✅ 点击成功")
+    #             return True, {}
+    #     except:
     #         continue
-    # return False, {"error": "未找到 Extend 按钮"}
+    # try:
+    #     btn = sb.find_element('button:contains("Extend")', timeout=10)
+    #     sb.driver.execute_script("arguments[0].click();", btn)
+    #     print("✅ 通过 JavaScript 点击成功")
+    #     return True, {}
+    # except Exception as e:
+    #     return False, {"error": str(e)}
+
+    for sel in selectors:
+        try:
+            elem = sb.find_element(sel, timeout=5)
+            print(f"✅ 找到按钮，选择器: {sel}")
+            sb.driver.execute_script("arguments[0].click();", elem)
+            print("✅ 通过 JavaScript 强制点击成功")
+            return True, {}
+        except Exception as e:
+            continue
+    return False, {"error": "未找到 Extend 按钮"}
 
 
 # 检查续期是否成功
