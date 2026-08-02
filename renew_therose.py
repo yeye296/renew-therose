@@ -10,7 +10,7 @@ TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN") or ""  # tg通知 bot token
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID") or ""      # tg通知 chat_id id
 PROXY_URL = os.environ.get("PROXY") or ""
 
-# BASE_URL = "https://client.therose.cloud/login"
+BASE_URL = "https://client.therose.cloud/login"
 PANEL_URL = "https://client.therose.cloud/panel?routeName=servers"
 RENEW_URL = "https://client.therose.cloud/panel?routeName=cart_renew&id=2638"
 
@@ -125,7 +125,7 @@ def send_tg(token, chat_id, message):
 def login(sb, email, password):
     print("🌐 打开登录页面...")
     print("⏳ 等待页面加载...")
-    sb.open(RENEW_URL)
+    sb.open(BASE_URL)
     sb.wait_for_ready_state_complete()
     sb.sleep(1)
     print("📧 填写邮箱...")
@@ -137,7 +137,7 @@ def login(sb, email, password):
     try:
         sb.uc_gui_click_captcha()
         print("✅ Turnstile 已点击")
-        time.sleep(6)
+        time.sleep(7)
         # sb.save_screenshot("turnstile_passed.png")
     except Exception as e:
         print(f"⚠️ Turnstile 处理异常: {e}")
